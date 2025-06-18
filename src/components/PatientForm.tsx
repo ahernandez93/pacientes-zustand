@@ -1,13 +1,39 @@
 import { useForm } from 'react-hook-form'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
 import Error from './Error'
 import type { DraftPatient } from '../types'
 import { usePatientStore } from '../store'
 
 export default function PatientForm() {
     const addPatient = usePatientStore(state => state.addPatient)
-    const { register, handleSubmit, formState: { errors } } = useForm<DraftPatient>()
+    const activeId = usePatientStore(state => state.activeId)
+    const patients = usePatientStore(state => state.patients)
+    const updatePatient = usePatientStore(state => state.updatePatient)
+
+    const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<DraftPatient>()
+
+    useEffect(() => {
+        if (activeId) {
+            const activePatient = patients.filter(patient => patient.id === activeId)[0]
+            setValue('name', activePatient.name)
+            setValue('caretaker', activePatient.caretaker)
+            setValue('email', activePatient.email)
+            setValue('date', activePatient.date)
+            setValue('symptoms', activePatient.symptoms)
+        }
+    }, [activeId, patients, setValue])
+
     const registerPatient = (data: DraftPatient) => {
-        addPatient(data)
+        if (activeId) {
+            updatePatient(data)
+            toast.success('Paciente Actualizado Correctamente')
+        } else {
+            addPatient(data)
+            toast.success('Paciente Registrado Correctamente')
+        }
+
+        reset()
     }
 
     return (
@@ -111,11 +137,11 @@ export default function PatientForm() {
                         {...register('symptoms', {
                             required: 'Los Síntomas son obligatorios'
                         })}
-                        onInput={(e) => {
-                            const target = e.target as HTMLTextAreaElement;
-                            target.style.height = "auto";
-                            target.style.height = `${target.scrollHeight}px`;
-                        }}
+                    /* onInput={(e) => {
+                        const target = e.target as HTMLTextAreaElement;
+                        target.style.height = "auto";
+                        target.style.height = `${target.scrollHeight}px`;
+                    }} */
                     />
                     {errors.symptoms && (
                         <Error>{errors.symptoms?.message}</Error>

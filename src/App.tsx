@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify"
 import PatientForm from "./components/PatientForm"
 import PatientList from "./components/PatientList"
 
@@ -16,6 +17,18 @@ function App() {
           <PatientList />
         </div>
       </div>
+
+      <ToastContainer
+        /* position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover */
+      />
     </>
   )
 }
